@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+        <title>Warehouse</title>
+
+        <link rel="apple-touch-icon" href="img/whiskey.png" />
+        <link rel="apple-touch-startup-image" href="img/startup.png" />
+
+        <link rel="stylesheet" href="css/my-custom-theme.min.css" />
+        <link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+        <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
+        <!-- <link rel="stylesheet" href="css/jquery.mobile-1.4.0.min.css" />-->
+
+        <link rel="stylesheet" href="lib/datebox/jqm-datebox.css" />
+        <link rel="stylesheet" href="css/validation.css" />
+
+        <link rel="stylesheet" href="css/jqm-icon-pack-fa.css" />
+        <link rel="stylesheet" href="css/jquery.jqplot.min.css" />
+        <link rel="stylesheet" href="css/my.css" />
+        <!--<link rel="stylesheet" href="css/original/jqm-icon-pack-2.0-original.css" />-->
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <script src="lib/jquery-2.0.3.min.js"></script>
+        <script>
+            $(document).bind('mobileinit', function() {
+
+                $.mobile.selectmenu.prototype.options.nativeMenu = false;
+
+                //$.mobile.transitionFallbacks.slideout = "none";
+
+                //.mobile.page.prototype.options.domCache=true;
+                // PhoneGap
+                $.mobile.allowCrossDomainPages = true;
+                $.support.cors = true;
+            });
+        </script>
+
+        <script src="lib/modernizr.js"></script>
+
+        <script src="lib/jquery.mobile-1.4.0.min.js"></script>
+        <script type="text/javascript" src="lib/jaydata.min.js"></script>
+
+
+        <script src="lib/datebox/jqm-datebox.core.js"></script>
+        <script src="lib/datebox/jqm-datebox.mode.flipbox.js"></script>
+        <script src="lib/datebox/jquery.mobile.datebox.i18n.de.utf8.js"></script>
+
+
+
+
+        <script src="lib/mvc.js"></script>       <!-- Eigene MVC-Bibliothek -->
+        <script src="js/model.js"></script>      <!-- Logik -->
+
+        <script src="js/view.js"></script> 
+        <script>if (Modernizr.indexeddb)
+                document.write("<script src='js/jaydata_db_indexeddb.js'>\x3C/script>");//Indexeddb-DB
+            else
+                document.write("<script src='js/jaydata_db_websql.js'>\x3C/script>");//WebSQL-DB
+        </script><!-- View -->
+        <script src="js/controller.js"></script> <!-- Events -->
+        <script src="js/camera.js"></script>
+        <script src="js/barcode.js"></script>
+
+
+
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+
+        <script src="js/main.js"></script><!-- Main -->
+
+
+
+
+    </head>
+
+    <body>
+
+
+        <!-- Home-Page mit der Liste der vorhanden Items -->
+        <div id="warehouse-home" data-role="page" data-content-theme="a">
+            <div data-role="panel" id="menu" data-display="overlay" class="warehouse-mainMenu">
+                <h2>&nbsp;Menu</h2>
+                <div class="ui-panel-inner">
+
+                    <ul data-role="listview" class="mainMenu"></ul>
+
+                </div>
+            </div>
+            <div data-role="header" >
+                <h1>Items</h1>
+                <a href="" data-icon="plus" data-role="button" data-shadow="false" data-iconpos="left" class="ui-btn-right" id="newItem">Add</a>
+                <a href="#menu" data-shadow="false" data-icon="bars" data-role="button" data-iconpos="left" class="ui-btn-left" id="options2">Menu</a>
+
+            </div>
+            <!-- Content -->
+            <div data-role="content">
+
+
+                <!-- List-Template -->
+                <div id="warehouselist_temp" style="display: none">
+
+                    <div id="collapsible-template" data-filtertext="">
+                        <h2></h2>
+                        <ul id="itemlist" data-role="listview" data-inset="false">
+
+                        </ul>
+                    </div>
+
+                    <ul data-role="listview" >
+                        
+                        <li id="entryTemplate" class="entry" >
+                            <span id="forsearch" style="display: none"></span>
+
+                            <div class="ui-li-desc">
+                                <div class="table-0">
+                                    <img class="ui-li-icon" />
+                                </div>
+                                <div class="table-1">
+                                    <h3 id="ui-li-brand"></h3>
+                                    <p id="ui-li-description">
+                                </div>
+                                <div class="table-2">
+                                    <p id="ui-li-price">
+                                    <p id="ui-li-icount">
+                                </div>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Liste -->
+                <div id="warehouselist">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">                                  
+                            <input  id="filterBasic-input" data-inset="false" data-type="search" placeholder="Find Items...">      
+                        </div>
+                        <div class="ui-block-b"><input  id="barcodesearch" type="button" data-icon="barcode" data-iconpos="notext" value="Icon only">
+                        </div></div>
+
+                    <div data-role="collapsible-set" data-filter="true" data-children="> div, > div div ul li" data-inset="true" id="collapsiblesetForFilterChildren" data-input="#filterBasic-input">
+
+                    </div>
+
+                </div>
+
+            </div> <!-- Content -->
+        </div>
+
+        <!-- Page mit der Item -->
+        <div id="warehouse-details" data-role="page" data-content-theme="a">
+            <div data-role="header">
+                <h1>Item</h1>
+                <a href="" id="hometop" data-icon="back" data-role="button" data-iconpos="notext" data-shadow="false" class="ui-btn-right jqm-home"></a>
+            </div>
+            <!-- Content -->
+            <div data-role="content">
+                <div data-role="collapsible-set">
+                    <div data-role="collapsible" data-collapsed="true" data-collapsed-icon="barcode" data-content-theme="a">
+                        <h3>BarCode</h3>  
+                        <div>
+                            <p id="barcodetext"></p>
+                        </div>
+
+                        <div data-role="controlgroup" data-type="horizontal" >
+                            <input id="barcodebutton" type="button" data-icon="barcode" data-iconpos="notext" value="Icon only">
+                            <input id="barcodedelete" type="button" data-icon="delete" data-iconpos="notext" value="Icon only">
+                        </div><!-- ControlGroup -->
+                    </div><!-- Collapsible -->
+                    <div data-role="collapsible" data-collapsed="true" data-collapsed-icon="camera" data-content-theme="a">
+                        <h3>Photo</h3>  
+                        <img id="smallImage" src="" />
+                        <input style="display:none;" type="text" id="imagebase64" value="">
+                        <div data-role="controlgroup" data-type="horizontal" >
+                            <input id="camera" type="button" data-icon="camera" data-iconpos="notext" value="Icon only">
+                            <input id="folder" type="button" data-icon="folder-open" data-iconpos="notext" value="Icon only">
+                            <input id="delete" type="button" data-icon="delete" data-iconpos="notext" value="Icon only">
+                        </div><!-- ControlGroup -->
+                    </div><!-- Collapsible -->
+
+                    <div data-role="collapsible" data-collapsed="false" data-collapsed-icon="book" data-content-theme="a">
+                        <h3>Values</h3>                       
+
+                        <div id="warehousedetaillist" data-role="listview" data-inset="false">
+
+                            <div class="ui-field-contain">
+                                <label for="category" class="select">Category</label>
+
+                                <select required name="category" id="category" data-mini="true">
+
+
+                                </select>
+                            </div>
+
+                            <div class="ui-field-contain">
+                                <label for="brand">Brand:</label>
+                                <input required autocomplete="off" data-clear-btn="true" type="text" name="brand" placeholder="e.g. Levi's" id="brand" value="" data-mini="true">
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="description">Description:</label>
+                                <input required autocomplete="off" data-clear-btn="true" type="text" placeholder="e.g. 501 Straight 28W 30L" name="description" id="description" value="" data-mini="true">
+                            </div>                           
+                            <div class="ui-field-contain">
+                                <label for="date">BuyDate:</label>
+                                <input type="text" required pattern="(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}"placeholder="tap right on calendar"  name="date" id="buydate" data-role="datebox" data-options='{"mode":"flipbox", "useNewStyle":true}'/>
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="price">SellPrice $:</label>
+                                <input required autocomplete="off" type="number" data-clear-btn="true" placeholder="e.g. 19.95" name="sellprice" id="price" value="" data-mini="true">
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="count">Count:</label>
+                                <input type="range" name="count" id="count" value="0" min="0" max="100" data-highlight="true" data-mini="true">
+                            </div>
+                            <!--<div class="ui-field-contain">
+                                <label for="price">BuyPrice (per Item):</label>
+                                <input required autocomplete="off" type="number" data-clear-btn="true" placeholder="78.50" name="buyprice" id="price" value="" data-mini="true">
+                            </div>-->
+
+                            <div data-role="popup" id="tooltipcategory" data-theme="a">
+                                <p>Select your Item-Category</p>
+                            </div> 
+                        </div><!--    warehousedetaillist  --> 
+
+                    </div><!-- Collapsible -->
+                </div> <!-- Collapsibleset -->
+
+
+                <div data-role="navbar">
+                    <ul>
+                        <li><a id="homebottom" href="" data-icon="back">Cancel</a></li>
+                        <li><a id="delItem" href="" data-icon="delete">Delete</a></li>
+                        <li><a id="saveItem" href="" data-icon="check" class="ui-btn-active">Save</a></li>
+                    </ul>
+                </div> <!-- Aktionen -->
+
+                <!-- Item löschen Dialog -->
+                <div data-role="popup" id="delDialog" data-overlay-theme="a" data-theme="a">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Delete Item?</h1>
+                    </div>
+                    <div data-role="content" data-theme="d" 
+                         class="ui-corner-bottom ui-content">
+                        <h3 class="ui-title">Do you really want to delete this Item?</h3>
+                        <p>This Action cannot be reversed.</p>
+                        <a id="delNo" href="" data-role="button" data-inline="true" 
+                           data-theme="c" data-icon="back">Back</a>    
+                        <a id="delRealy" href="" data-role="button" data-inline="true" 
+                           data-transition="flow" data-theme="b" data-icon="delete">Delete</a>  
+                    </div>
+                </div> <!-- Item löschen Dialog -->
+
+            </div> <!-- Content -->
+        </div>  <!-- Page mit der Item -->
+        <div data-role="page" data-theme="a" id="warehouse-checkout">
+
+            <ul style="display: none">
+                <li id="checkout_li_template"><a id="aleft" href="#" >
+
+                        <fieldset class="ui-grid-a" >
+                            <div class="ui-block-a"><h2 id="brand"></h2><p id="description"></p></div>
+                            <div class="ui-block-b"><input id="checkoutcount" type="number" name="name2" value="" data-mini="true"><h3 id="price" style="float:right"></h3>
+                            </div>
+
+                        </fieldset></a>
+                    <a href="" id="deleteitem">Delete</a>
+                </li></ul>
+
+
+            <div data-role="panel" id="menu2" data-display="overlay" class="warehouse-mainMenu">
+                <h2>&nbsp;Menu</h2>
+                <div class="ui-panel-inner">
+                    <!-- This UL is the menu, where the items will be added -->
+                    <!-- Make sure you don't add any <li> or any other content inside it! -->
+                    <ul data-role="listview" class="mainMenu"></ul>
+
+                </div>
+            </div>
+            <!-- Header -->
+            <div data-role="header" id="header">
+                <h1>Checkout</h1>
+                <a href="#menu2" data-shadow="false" data-icon="bars" data-role="button" data-iconpos="left" class="ui-btn-left" id="options2">&nbsp;Menu</a>
+            </div> <!-- /header -->
+
+            <!-- Content -->
+            <div data-role="content">
+                <a href="" data-icon="barcode" data-role="button" data-shadow="false" data-iconpos="left" id="scanitems">Scan Item</a>
+                <br>
+                <div id="cart">
+
+
+                    <ul id="checkoutlist" data-role="listview" data-inset="true" data-split-icon="delete" data-split-theme="a">
+
+
+                    </ul>
+                    <ul data-role="listview">
+                        <li  data-role="list-divider"><fieldset class="ui-grid-a" >
+                                <div class="ui-block-a"><h2 style="float:right">Total Price =&nbsp;</h2></div>
+                                <div class="ui-block-b"><h3 id="totalprice" style="float:left"></h3>
+                                </div>
+
+                            </fieldset>
+                    </ul>
+
+
+
+                </div>
+
+
+            </div> <!-- /Content -->
+            <div data-role="footer">
+                <div data-role="navbar">
+                    <ul>                      
+                        <li><a id="clearcheckout" href="" data-icon="delete">Clear</a></li>
+                        <li><a id="savecheckout" href="" data-icon="shopping-cart" class="ui-btn-active">Checkout</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <div data-role="page" data-theme="a" id="warehouse-about">
+            <style>
+                @media all and (max-width: 25em) {
+                    .my-breakpoint .ui-block-a, .my-breakpoint .ui-block-b {
+                        width: 100%;
+                        float: none;
+                    }
+                }
+
+                @media all and (min-width: 25em) {
+                    .my-breakpoint.ui-grid-a .ui-block-a {
+                        width: 22%;
+                    }
+                    .my-breakpoint.ui-grid-a .ui-block-b {
+                        width: 77%;
+                    }
+                }
+            </style>
+
+            <div data-role="panel" id="menu3" data-display="overlay" class="warehouse-mainMenu">
+                <h2>&nbsp;Menu</h2>
+                <div class="ui-panel-inner">
+                    <!-- This UL is the menu, where the items will be added -->
+                    <!-- Make sure you don't add any <li> or any other content inside it! -->
+                    <ul data-role="listview" class="mainMenu"></ul>
+
+                </div>
+            </div>
+            <!-- Header -->
+            <div data-role="header">
+                <h1>About</h1>
+                <a href="#menu3" data-shadow="false" data-icon="bars" data-role="button" data-iconpos="left" class="ui-btn-left" id="options2">&nbsp;Menu</a>
+            </div>
+            <!-- /header -->
+
+            <!-- Content -->
+            <div data-role="content">
+                <h3>Inventory-App</h3>
+                <div class="ui-grid-a my-breakpoint">
+                    <div class="ui-block-a">
+                        <img src="img/icon.png" />
+                    </div>
+
+                    <div class="ui-block-b">
+                        <br />
+                        Coded with: <a href="http://www.w3.org/TR/html5/">HTML5</a>,
+                        <br />
+                        
+                        <a href="http://jquerymobile.com/">jQuery Mobile</a>,
+                        <a href="http://jaydata.org/">JayData</a>,
+                        <a href="http://www.jqplot.com/">jqPlot</a>,
+                        <br />
+                         <a href="http://modernizr.com/">Modernizr</a>,
+                         <a href="http://dev.jtsage.com/jQM-DateBox/">DateBox</a>,
+                         <a href="http://ejohn.org/blog/simple-javascript-inheritance/">Simple JavaScript Inheritance</a>,
+                         <a href="http://cordova.apache.org/">Cordova</a>
+                         
+                        <br />
+                        <br />
+                        
+                        HS Osnabrück<br />
+                        RMA-Hausarbeit WS13/14<br />
+                        Dipl.-Inf. Björn Plutka<br />
+                        Viktor Zeitler (390174)
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- /Content -->
+        </div>
+        <div data-role="page" data-theme="a" id="warehouse-options">
+
+            <ul style="display: none">
+                <li id="options_li_template" class="options_li_template"><a id="aleft" href="#" ></a>
+                    <a href="" id="deletecategory">Delete</a>
+                </li>
+            </ul>
+
+            <div data-role="panel" id="menu4" data-display="overlay" class="warehouse-mainMenu">
+                <h2>&nbsp;Menu</h2>
+                <div class="ui-panel-inner">
+                    <!-- This UL is the menu, where the items will be added -->
+                    <!-- Make sure you don't add any <li> or any other content inside it! -->
+                    <ul data-role="listview" class="mainMenu"></ul>
+
+                </div>
+            </div>
+            <!-- Header -->
+            <div data-role="header">
+                <h1>Options</h1>
+                <a href="#menu4" data-shadow="false" data-icon="bars" data-role="button" data-iconpos="left" class="ui-btn-left" id="options2">&nbsp;Menu</a>
+            </div>
+            <!-- /header -->
+
+            <!-- Content -->
+            <div data-role="content">
+
+
+
+                <div data-role="collapsible" id="options-categories">
+                    <h2>Add Category</h2>
+                    <!--<div class="ui-grid-a" >
+                                <div class="ui-block-a" style="width:70%"><input type="text" placeholder="here" id="options-text" data-clear-btn="true"></div>
+                                <div class="ui-block-b" style="width:30%"><button data-mini="true" id="options-submit">Add</button></div>
+                    </div></br>-->
+                    <div style="padding-bottom: .7em;"><button data-inline="true" data-mini="true" id="options-submit" style="float: right">Add</button>
+  <div style="overflow: hidden; padding-right: .5em;">
+    <input type="text" placeholder="e.g. Socks" id="options-text" data-clear-btn="true" style="width: 100%;">
+   </div></div> 
+                    <ul id="categories-itemlist" data-role="listview" data-inset="false"  data-split-icon="delete" data-split-theme="a">
+                          
+
+
+                    </ul>
+                </div>
+                <a href="" data-shadow="false" data-icon="delete" data-role="button" data-iconpos="left" id="statistics-reset">Reset Statistics</a>
+                <a href="" data-shadow="false" data-icon="delete" data-role="button" data-iconpos="left" id="delallitems" style="background: red ">Delete All Items</a>
+
+
+                <div data-role="popup" id="delDialog" data-overlay-theme="a" data-theme="a">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Delete Items ?</h1>
+                    </div>
+                    <div data-role="content" data-theme="d" 
+                         class="ui-corner-bottom ui-content">
+                        <h3 class="ui-title">Do you really want to delete all Items?</h3>
+                        <p>This Action cannot be reversed</p>
+                        <a id="delNo" href="#warehouse-options" data-role="button" data-inline="true" 
+                           data-theme="c" data-icon="back">Back</a>    
+                        <a id="delallRealy" href="" data-role="button" data-inline="true" 
+                           data-transition="flow" data-theme="b" data-icon="delete" style="background: red ">Delete</a>  
+                    </div>
+                </div>
+            </div><!-- /Content -->
+        </div>
+        <div data-role="page" data-theme="a" id="warehouse-statistics">          
+
+            <div data-role="panel" id="menu5" data-display="overlay" class="warehouse-mainMenu">
+                <h2>&nbsp;Menu</h2>
+                <div class="ui-panel-inner">
+                    <!-- This UL is the menu, where the items will be added -->
+                    <!-- Make sure you don't add any <li> or any other content inside it! -->
+                    <ul data-role="listview" class="mainMenu"></ul>
+
+                </div>
+            </div>
+            <!-- Header -->
+            <div data-role="header">
+                <h1>Statistics</h1>
+                <a href="#menu5" data-shadow="false" data-icon="bars" data-role="button" data-iconpos="left" class="ui-btn-left" id="options2">&nbsp;Menu</a>
+            </div>
+            <!-- /header -->
+
+            <!-- Content -->
+            <div data-role="content">
+
+                <a href="" data-shadow="false" data-icon="minus" data-role="button" data-iconpos="left" id="statistics-collapsible-button">Revenue last Week</a>
+                <div id="plotChart"></div> 
+
+
+            </div><!-- /Content -->
+        </div>
+
+        <script type="text/javascript" src="lib/jquery.jqplot.min.js"></script>
+        <script type="text/javascript" src="lib/jqplot.barRenderer.min.js"></script>
+        <script type="text/javascript" src="lib/jqplot.categoryAxisRenderer.min.js"></script>
+        <script type="text/javascript" src="lib/jqplot.dateAxisRenderer.min.js"></script>
+        <script type="text/javascript" src="lib/jqplot.pointLabels.js"></script>
+    </body>
+
+</html>

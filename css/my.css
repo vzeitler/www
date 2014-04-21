@@ -1,0 +1,58 @@
+//.ui-page { -webkit-backface-visibility: hidden; }
+/* Tabelle in der Tabelle */
+
+.table-0 {
+   width: 20%;
+   float: left;
+   padding-right:15%; 
+}
+.table-1 {
+   width: 50%;
+   float:  left; 
+   
+}
+.table-2 {
+   width: 15%;
+   float: left;
+   
+}
+img {
+	max-width: 100%;
+	height: auto;
+	
+}
+#warehouselist .ui-grid-a{
+    padding-bottom: 10% !important;
+}
+#warehouselist .ui-block-a{
+    width: 85% !important;
+}
+#warehouselist .ui-block-b{
+    width: 15% !important;
+}
+.warehouse-mainMenu{
+    width: 45% !important;
+}
+
+#warehouse-checkout .ui-block-a{
+    width: 60% !important;
+}
+#warehouse-checkout .ui-block-b{
+    width: 40% !important;
+}
+#warehouse-checkout #aleft{
+   background: white;   
+}
+.hidden{
+     display: none;
+     
+}
+.hiddenstatistics{
+     display: none;
+     
+}
+#options-text{
+    width: 30%;
+}
+
+

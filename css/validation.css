@@ -1,0 +1,7 @@
+/* Validation */
+.V_valid_field {
+   color: #00CC00;
+}
+.V_invalid_field {
+   color: #CC0000;
+}
